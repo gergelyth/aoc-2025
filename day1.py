@@ -20,15 +20,21 @@ def solve(lines):
     
     dial = 50
     for line in lines:
+        new_dial = dial
         turn = int(line[1:])
         if line[0] == 'L':
-            dial -= turn
+            new_dial -= turn
         else:
-            dial += turn
+            new_dial += turn
 
-        dial = dial % 100
-        if dial == 0:
-            result += 1
+        # full rotations + dial at exactly zero + sign change if needed
+        result += (abs(new_dial) // 100) + (1 if new_dial == 0 else 0) + (1 if new_dial != 0 and dial != 0 and new_dial * dial < 0 else 0)
+        # print("line", line)
+        # print("dial", dial)
+        # print("new_dial", new_dial)
+
+        dial = new_dial % 100
+        # print("result", result)
 
     return result
 
