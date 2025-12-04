@@ -22,6 +22,19 @@ class Matrix:
 
         return self.matrix[row][col]
 
+    def get_all_surrounding(self, row: int, col: int) -> list[str]:
+        surrounds = []
+        for r in range(row-1, row+2):
+            for c in range(col-1, col+2):
+                if r == row and c == col:
+                    continue
+                
+                item = self.get_item(r, c)
+                if item is not None:
+                    surrounds.append(item)
+
+        return surrounds
+
     def set_item(self, row: int, col: int, item: any) -> None:
         if row < 0 or row >= self.row_count or col < 0 or col >= self.col_count:
             return
