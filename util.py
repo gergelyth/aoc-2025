@@ -35,6 +35,9 @@ class Matrix:
 
         return surrounds
 
+    def set_item_pos(self, position: tuple[int, int], item: any) -> None:
+        return self.set_item(position[0], position[1], item)
+    
     def set_item(self, row: int, col: int, item: any) -> None:
         if row < 0 or row >= self.row_count or col < 0 or col >= self.col_count:
             return
