@@ -72,6 +72,26 @@ def get_range_overlap(x: tuple[int,int], y: tuple[int,int]) -> tuple[int,int] | 
     overlap = max(x[0], y[0]), min(x[1], y[1])
     return overlap if overlap[0] <= overlap[1] else None
 
+def flatten_overlapping_ranges(ranges: list[tuple[int,int]]) -> list[tuple[int,int]]:
+    flattened_ranges_temp = []
+    for start, end in ranges:
+        flattened_ranges_temp.append((start, "start"))
+        flattened_ranges_temp.append((end, "end"))
+
+    flattened_ranges_temp.sort(key= lambda x: (x[0], x[1] != "start"))
+
+    flattened = []
+    stack = []
+    for number, bound_type in flattened_ranges_temp:
+        if bound_type == "start":
+            stack.append(number)
+        else:
+            if len(stack) == 1:
+                flattened.append((stack[0], number))
+            stack.pop()
+
+    return flattened
+
 def first_list_contains_second(first: list[int], second: list[int]) -> bool:
     return not (Counter(second) - Counter(first))
 

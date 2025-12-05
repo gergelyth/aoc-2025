@@ -1,5 +1,5 @@
 import sys
-from util import get_lines
+from util import flatten_overlapping_ranges, get_lines
 
 TEST = """3-5
 10-14
@@ -20,25 +20,8 @@ def solve(lines):
     ranges_str = lines[:lines.index("")]
     ranges = [tuple(map(int, range_str.split("-"))) for range_str in ranges_str]
 
-    flattened_ranges_temp = []
-    for start, end in ranges:
-        flattened_ranges_temp.append((start, "start"))
-        flattened_ranges_temp.append((end, "end"))
-
-    flattened_ranges_temp.sort(key= lambda x: (x[0], x[1] != "start"))
-
-    flattened = []
-    stack = []
-    for number, bound_type in flattened_ranges_temp:
-        if bound_type == "start":
-            stack.append(number)
-        else:
-            if len(stack) == 1:
-                flattened.append((stack[0], number))
-            stack.pop()
-
     #count the numbers now
-    for lower, upper in flattened:
+    for lower, upper in flatten_overlapping_ranges(ranges):
         result += upper - lower + 1
     return result
 
