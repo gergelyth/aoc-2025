@@ -16,16 +16,30 @@ TEST = """3-5
 def solve(lines):
     result = 0
 
-    ranges_str, numbers_str = lines[:lines.index("")], lines[lines.index("")+1:]
+    # flatten the overlaps
+    ranges_str = lines[:lines.index("")]
     ranges = [tuple(map(int, range_str.split("-"))) for range_str in ranges_str]
 
-    for number_str in numbers_str:
-        number = int(number_str)
-        for lower, upper in ranges:
-            if lower <= number <= upper:
-                result += 1
-                break
+    flattened_ranges_temp = []
+    for start, end in ranges:
+        flattened_ranges_temp.append((start, "start"))
+        flattened_ranges_temp.append((end, "end"))
 
+    flattened_ranges_temp.sort(key= lambda x: (x[0], x[1] != "start"))
+
+    flattened = []
+    stack = []
+    for number, bound_type in flattened_ranges_temp:
+        if bound_type == "start":
+            stack.append(number)
+        else:
+            if len(stack) == 1:
+                flattened.append((stack[0], number))
+            stack.pop()
+
+    #count the numbers now
+    for lower, upper in flattened:
+        result += upper - lower + 1
     return result
 
 def read_input():
