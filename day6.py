@@ -5,20 +5,32 @@ from util import get_lines
 TEST = """123 328  51 64 
  45 64  387 23 
   6 98  215 314
-*   +   *   +"""
+*   +   *   +  """
+
+def calc(columns_backwards):
+    #get the operator
+    operator = (columns_backwards[-1]).pop()
+    numbers = [int("".join(c)) for c in columns_backwards]
+    
+    if operator == "+":
+        return sum(numbers)
+    elif operator == "*":
+        return math.prod(numbers)
 
 def solve(lines):
     result = 0
 
-    split_lines = [line.split() for line in lines]
-    for i in range(len(split_lines[0])):
-        problem = [split_line[i] for split_line in split_lines]
-        numbers = [int(n) for n in problem[:-1]]
-        if problem[-1] == "+":
-            result += sum(numbers)
-        elif problem[-1] == "*":
-            result += math.prod(numbers)
+    columns_backwards = []
+    for i in range(len(lines[0])-1, -1, -1):
+        column = [line[i] for line in lines]
+        if not all(x == " " for x in column):
+            columns_backwards.append(column)
+            continue
+        
+        result += calc(columns_backwards)
+        columns_backwards = []
 
+    result += calc(columns_backwards)
     return result
 
 def read_input():
