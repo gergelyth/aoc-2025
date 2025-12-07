@@ -1,5 +1,6 @@
 import sys
 from util import get_lines
+from collections import defaultdict
 
 TEST = """.......S.......
 ...............
@@ -19,27 +20,23 @@ TEST = """.......S.......
 ..............."""
 
 def solve(lines):
-    result = 0
-
     col_count = len(lines[0])
     
-    beams = set([lines[0].index("S")])
+    beams = defaultdict(int, { lines[0].index("S") : 1 })
     for line in lines[1:]:
-        new_beams = set()
-        for beam in beams:
-            if line[beam] == ".":
-                new_beams.add(beam)
-            elif line[beam] == "^":
-                if beam-1 >= 0:
-                    new_beams.add(beam-1)
-                if beam+1 < col_count:
-                    new_beams.add(beam+1)
+        new_beams = defaultdict(int)
+        for beam_index, beam_value in beams.items():
+            if line[beam_index] == ".":
+                new_beams[beam_index] += beam_value
+            elif line[beam_index] == "^":
+                if beam_index-1 >= 0:
+                    new_beams[beam_index-1] += beam_value
+                if beam_index+1 < col_count:
+                    new_beams[beam_index+1] += beam_value
                 
-                result += 1
-
         beams = new_beams
 
-    return result
+    return sum(beams.values())
 
 def read_input():
     if not sys.stdin.isatty():
