@@ -14,7 +14,7 @@ def calc(end_state, buttons):
         new_states = set()
         for button in buttons:
             for state in states:
-                new_value = state ^ button
+                new_value = state + button
                 if new_value == end_state:
                     return steps
                 
@@ -26,16 +26,23 @@ def calc(end_state, buttons):
 def solve(lines):
     result = 0
 
-    for line in lines:
+    for line in lines[:1]:
         parts = line.split()
         #TODO can we just simply parse a tuple in python?
-        config, buttons_raw = parts[0][1:-1], [list(map(int, button[1:-1].split(","))) for button in parts[1:-1]]
+        buttons_raw, joltages = [list(map(int, button[1:-1].split(","))) for button in parts[1:-1]], [int(n) for n in parts[-1][1:-1].split(",")]
 
-        end_state = int("".join(["1" if c == "#" else "0" for c in config]), 2)
-        buttons_arr = [["1" if i in button_raw else "0" for i in range(len(config))] for button_raw in buttons_raw]
+        end_state = 0
+        for i, joltage in enumerate(reversed(joltages)):
+            end_state += 2 ** i * joltage
+
+        buttons_arr = [["1" if i in button_raw else "0" for i in range(len(joltages))] for button_raw in buttons_raw]
         buttons = [int("".join(b), 2) for b in buttons_arr]
+        print(buttons)
+        # print(buttons[0] * 1 + buttons[1] * 3 + buttons[3] * 3 + buttons[4] * 1 + buttons[5] * 2)
+        # print(end_state)
 
         result += calc(end_state, buttons)
+        print(result)
 
     return result
 
