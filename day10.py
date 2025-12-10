@@ -1,29 +1,28 @@
 import sys
 import time
+import math
 from util import get_lines
 
 TEST = """[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 [...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}
 [.###.#] (0,1,2,3,4) (0,3,4) (0,1,2,4,5) (1,2) {10,11,11,5,10,5}"""
 
-def calc(target, buttons, i):
-    button = buttons[i]    
-    if i == len(buttons)-1:
-        if target % button == 0:
-            return target // button
-        return -1
+def calc(target, buttons):
+    #try DP
+    memory = [math.inf] * (target+1)
+    for row in range(1, len(buttons)+1):
+        newline = [0] * (target+1)
+        for col in range(1, target+1):
+            if buttons[row-1] > col:
+                newline[col] = memory[col]
+            else:
+                #we either don't press this button and take the presses from above (where this button wasn't available)
+                #or we press and take the number from the target-button cell
+                newline[col] = min(memory[col], 1 + newline[col-buttons[row-1]])
 
-    max_presses = target // button
-    if max_presses == 0:
-        return calc(target, buttons, i+1)
-    
-    for j in range(max_presses, -1, -1):
-        rec = calc(target - j * button, buttons, i+1)
-        if rec == -1:
-            continue
-        return j + rec
+        memory = newline
 
-    return -1
+    return memory[col]
 
 #take the biggest number, press it as many times as we can while still under target end state
 #remove presses from joltages, recursively call with those buttons removed and target end state adjusted
@@ -53,9 +52,7 @@ def solve(lines):
         buttons = [int("".join(b)) for b in buttons_arr]
 
         buttons.sort(reverse=True)
-        calc_result = calc(target, buttons, 0)
-        if calc_result == -1:
-            raise Exception(f"No result for {line}")
+        calc_result = calc(target, buttons)
         result += calc_result
 
         print(f"Line done {l_idx+1}/{len(lines)}")
